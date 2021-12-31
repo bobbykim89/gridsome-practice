@@ -1,47 +1,61 @@
 <template>
-  <Layout>
-    <v-container>
-      <v-row>
-        <v-col sm="6" offset-sm="3">
-          <v-tabs v-model="tab" grow>
-            <v-tab>Tab</v-tab>
-            <v-tab>Tab</v-tab>
-            <v-tab>Tab</v-tab>
-          </v-tabs>
-          <v-card class="mx-auto" max-width="400">
-            <v-img
-              class="white--text align-end"
-              height="200px"
-              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-            />
+  <Layout v-slot="{ searchText }">
+    <v-tabs v-model="tab" grow>
+      <v-tab>All Events</v-tab>
+      <v-tab>Live Music</v-tab>
+      <v-tab>Coding Events</v-tab>
+    </v-tabs>
+    <v-row class="justify-space-around">
+      <v-card
+        v-for="edge in getEvents(searchText)"
+        :key="edge.node.id"
+        width="280"
+        class="mt-5"
+      >
+        <v-img
+          class="white--text align-end"
+          height="200px"
+          src="http://localhost:1337/uploads/fjwzqx9nutnmz9k3pjur_b438f05796.jpg"
+        />
+        <v-card-title>
+          {{ edge.node.title }}
+        </v-card-title>
 
-            <v-card-subtitle class="pb-0">
-              Number 10
-            </v-card-subtitle>
+        <v-card-subtitle class="pb-0">
+          {{ formatDate(edge.node.date) }}
+        </v-card-subtitle>
 
-            <v-card-text class="text--primary">
-              <div>Whitehaven Beach</div>
-
-              <div>Whitsunday Island, Whitsunday Islands</div>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-btn color="orange" text>
-                Share
-              </v-btn>
-
-              <v-btn color="orange" text>
-                Explore
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+        <v-card-actions>
+          <v-btn @click="$router.push(edge.node.path)" color="orange" text>
+            More Info
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-row>
   </Layout>
 </template>
 
+<page-query>
+  query {
+  events: allEvent {
+    edges {
+      node {
+        id
+        title
+        description
+        price
+        date
+        duration
+        path
+      }
+    }
+  }
+}
+</page-query>
+
 <script>
+import moment from "moment";
+
 export default {
   metaInfo: {
     title: "Hello, world!",
@@ -49,23 +63,37 @@ export default {
   data() {
     return {
       tab: 0,
+      events: [],
     };
+  },
+  mounted() {
+    this.events = this.$page.events.edges;
   },
   watch: {
     tab(val) {
       if (this.tab === 0) {
         this.showAllEvents();
       } else {
-        this.showEventsByType();
+        this.showEventsByType(val);
       }
     },
   },
   methods: {
     showAllEvents() {
-      console.log("all");
+      this.events = this.$page.events.edges;
     },
-    showEventsByType() {
-      console.log("type");
+    showEventsByType(val) {
+      this.events = this.$page.events.edges.filter((edge) => {
+        return edge.node.category === val;
+      });
+    },
+    formatDate(date) {
+      return moment(date).format("MMMM Do YYYY, h:mm a");
+    },
+    getEvents(searchText) {
+      return this.events.filter((edge) => {
+        return edge.node.title.toLowerCase().includes(searchText.toLowerCase());
+      });
     },
   },
 };

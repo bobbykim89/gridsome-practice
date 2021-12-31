@@ -22,11 +22,13 @@ module.exports = function(api) {
 
     const collection = actions.addCollection({
       typeName: "Event",
+      path: "events/:id",
     });
 
     data.data.map((event) => {
       collection.addNode({
         id: event.id,
+        path: "/events/" + event.id,
         title: event.attributes.title,
         description: event.attributes.description,
         price: event.attributes.price,
@@ -34,6 +36,7 @@ module.exports = function(api) {
         duration: event.attributes.duration,
         // thumbnail: event.attributes.image.formats.thumbnail.url,
         // image: event.attributes.image.formats.medium.url,
+        category: event.attributes.category,
       });
     });
     // for (const event of data) {
