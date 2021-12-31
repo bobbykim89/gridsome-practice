@@ -24,17 +24,30 @@ module.exports = function(api) {
       typeName: "Event",
     });
 
-    for (const event of data) {
+    data.data.map((event) => {
       collection.addNode({
-        id: event.attributes.id,
+        id: event.id,
         title: event.attributes.title,
         description: event.attributes.description,
         price: event.attributes.price,
         date: event.attributes.date,
         duration: event.attributes.duration,
-        thumbnail: event.attributes.image.formats.thumbnail.url,
-        image: event.attributes.image.formats.medium.url,
+        // thumbnail: event.attributes.image.formats.thumbnail.url,
+        // image: event.attributes.image.formats.medium.url,
       });
-    }
+    });
+    // for (const event of data) {
+    //   collection.addNode({
+    //     id: event.id,
+    //     title: event.attributes.title,
+    //     description: event.attributes.description,
+    //     price: event.attributes.price,
+    //     date: event.attributes.date,
+    //     duration: event.attributes.duration,
+    //     thumbnail: event.attributes.image.formats.thumbnail.url,
+    //     image: event.attributes.image.formats.medium.url,
+    //   });
+    // }
+    // console.log(data.data);
   });
 };
